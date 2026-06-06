@@ -1,28 +1,83 @@
 
-struct Solution;
-use std::collections::HashMap;
-impl Solution {
-    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
-        let mut nums_map : HashMap<i32,i32> = HashMap::new();
-        // 3,2,5,9 target 7  temp = 4
-        for(index_nums,&num) in nums.iter().enumerate(){
-            let temp = target - num;
-            if nums_map.contains_key(&temp) {
-                println!(" {}, {} " ,*nums_map.get(&temp).unwrap() ,index_nums as i32);
-                return vec![*nums_map.get(&temp).unwrap(),index_nums as i32, ];
-
-            }
-            nums_map.insert(num, index_nums as i32);
-        }
-        return vec![];
 
 
-     
+    struct Solution;
+
+    #[derive(PartialEq, Eq, Clone, Debug)]
+    pub struct ListNode{
+        pub val: i32,
+        pub next: Option<Box<ListNode>>
     }
 
+    impl ListNode {
+    #[inline]
+    fn new(val: i32) -> Self {
+        ListNode {
+        next: None,
+        val
+        }
+    }
+    }
+    /*  Input: l1 = [2,4,3], l2 = [5,6,4]
+    Output: [7,0,8]
+    Explanation: 342 + 465 = 807. */
+    impl Solution {
+        pub fn add_two_numbers(l1: Option<Box<ListNode>>, l2: Option<Box<ListNode>>) -> Option<Box<ListNode>> {
+
+            let mut temp_l1 : Option<Box<ListNode>> = l1.clone();
+            let mut temp_l2 : Option<Box<ListNode>> = l2.clone();
+            let mut final_vec : Option<Box<ListNode>> = Some(Box::new(ListNode { val: (0), next: None }));
+            let mut l1_val : i32 = 0;
+            let mut l2_val : i32 = 0;
+            let mut retenue : i32 = 0;
+            let mut courant = &mut final_vec;
+            while temp_l1.is_some() || temp_l2.is_some() || retenue > 0 {
+
+        
+
+                if let Some(node1) = temp_l1{
+
+                    l1_val = node1.val;
+                    temp_l1 = node1.next;
+                }else{
+                    l1_val = 0;
+                }
+
+                if let Some(node2) = temp_l2{
+
+                    l2_val = node2.val;
+                    temp_l2 = node2.next;
+                }else{
+                    l2_val = 0;
+                }
+
+                let somme : i32 = l1_val + l2_val + retenue;
+
+                let reste : i32 = somme % 10;
+                courant.as_mut().unwrap().next = Some(Box::new(ListNode{val:reste,next:None}));;
+
     
-}
-fn main() {
-    Solution::two_sum(vec![3,2,5,9], 7);
-println!("Hello, world!");
-}
+
+                if somme >= 10 {
+                    retenue = 1;
+
+                }else{
+                    retenue = 0
+                }
+
+                courant = &mut courant.as_mut().unwrap().next;
+                
+                
+                
+
+            }
+            
+            return final_vec.as_mut().unwrap().next.take();
+        }
+    }
+    fn main() {
+        let l1 : Option<Box<ListNode>> = Some(Box::new(ListNode { val: 2, next: ( Some(Box::new(ListNode { val: 4, next: Some(Box::new(ListNode::new(3))) }))) }));
+        let l2 : Option<Box<ListNode>> = Some(Box::new(ListNode { val: 6, next: Some(Box::new(ListNode::new(4))) })) ;
+        println!("{:?}",Solution::add_two_numbers(l1, l2));
+    println!("Hello, world!");
+    }
